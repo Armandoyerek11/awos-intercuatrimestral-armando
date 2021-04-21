@@ -1,98 +1,107 @@
 const express = require('express');
-const _ = require ('underscore');
-const Empleado = require('../models/empleado');
+const _ = require('underscore');
 const app = express();
+const Empleado = require('../models/empleado');
 
-app.get('/empleado', function (req, res) {
+app.get('/empleado', (req, res) => {
     let desde = req.query.desde || 0;
-    let hasta = req.query.hasta || 100;
-    Empleado.find({ activo: true })
+    let hasta = req.query.hasta || 10;
+
+    Empleado.find({})
     .skip(Number(desde))
     .limit(Number(hasta))
-    .exec((err,empleados) => {
-        if(err){
+    .populate('departamento')
+    .exec((err, empleados) => {
+        if(err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Ocurrio un error al consultar empleado',
+                msg: 'Ocurrio un error al listar los empleados',
                 err
             });
         }
+
         res.json({
-            ok:true,
-            msg:'Lista de empleados obtenida con exito',
+            ok: true,
+            msg: 'Empleados listados con exito',
             conteo: empleados.length,
             empleados
         });
     });
-  });
-  app.post('/empleado', function(req, res){
+});
+
+app.post('/empleado', (req, res) =>{
     let body = req.body;
     let emp = new Empleado({
-        id_usuario: body.id_usuario,
-        id_departamento: body.id_departamento,
-        nombre_del_puesto: body.nombre_del_puesto,
-        anios_servicio: body.anios_servicio,
-        hora_entrada: body.hora_entrada,
-        hora_salida: body.hora_salida,
-    }); 
+        _id: req.body._id,
+        id_usuario: req.body.id_usuario,
+        id_departamento: req.body.id_departamento,
+        nombre_del_puesto: req.body.nombre_del_puesto,
+        anios_servicio: req.body.anios_servicio,
+        hora_entrada: req.body.hora_entrada,
+        hora_salida: req.body.hora_salida,
+        activo: req.body.activo,
+    });
 
     emp.save((err, empDB) => {
         if(err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Ocurrio un error',
+                msg: 'Error al insertar un empleado',
                 err
             });
         }
-        
+
         res.json({
             ok: true,
-            msg: 'empleado insertado con exito',
+            msg: 'Empleado insertado con exito',
             empDB
         });
     });
-  });
-  
-  app.put('/empleado/:id', function (req, res){
-    let id = req.params.id;
-    let body = _.pick(req.body, ['nomnre_del_puesto','anios_servicio','hora_entrada','hora_salida']);
+});
 
-    Empleado.findByIdAndUpdate(id , body , 
-    { new:true, runValidators:true, context:'query'},
-    (err, empDB) => {
+app.put('/empleado', function (req, res) {
+    let id = req.params.id
+    let body = _.pick(req.body,['usuario','hora_entrada','hora_salida']);
+
+    Empleado.findByIdAndUpdate(id, body, 
+        { new:true, 
+        runValidators: true, 
+        context: 'query' },
+        (err, empDB) =>{
         if(err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Ocurrio un error al momento de actualizar',
+                msg: 'Ocurrio un error al actualizar',
                 err
             });
         }
+
         res.json({
             ok:true,
             msg: 'Empleado actualizado con exito',
-            empleado: empDB
+            empleados: empDB
         });
     });
- });
-
- app.delete('/empleado/:id', function ( req, res){
-
-    let id = req.params.id;
-    Empleado.findByIdAndUpdate(id, { activo: false }, 
-        { new: true, runValidators: true, context: 'query'},(err, empBD) => {
-            if(err) {
-                        return res.status(400).json({
-                            ok: false,
-                            msg: 'Ocurrio un error al momento de eliminar',
-                            err
-                        });
-                    }
-                    res.json({
-                        ok:true,
-                        msg: 'Empleado eliminado con exito',
-                        empBD
-                    });
-    });
   });
-  
-  module.exports = app;
+
+  app.delete('/empleado', function (req, res) {
+    let id = req.params.id;
+
+    Empleado.deleteOne({ id: id }, (err, empleadoBorrado) =>{
+       if(err) {
+           return res.status(400).json({
+               ok: false,
+               msg: 'Ocurrio un error al intentar de eliminar el empleado',
+               err
+           });
+       }
+
+       res.json({
+           ok: true,
+           msg: 'Empleado eliminado con exito',
+           empleadoBorrado
+       });
+    });
+});
+
+module.exports = app;

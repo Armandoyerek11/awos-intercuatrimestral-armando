@@ -1,40 +1,39 @@
 const mongoose = require('mongoose');
-let Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-//let empleadoSchema = new Schema({​​
 let empleadoSchema = new Schema({
-    id_usuario:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Usuario',
-        require: true
+    _id: {
+        type: String,
+        required: [true, 'El id es necesario']
     },
-    id_departamento:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Departamento',
-        require: true
+    usuario: {
+        type: Schema.Types.String,
+        ref: 'Usuario',
     },
-    nombre_del_puesto:{
-        type:String,
-        require:[true,'El nombre del puesto es necesario'],
-        unique: true
+    departamento: {
+        type: Schema.Types.String,
+        ref: 'Departamento'
     },
-    anios_servicios:{
-        type:Number,
-        requiere:[true, 'Este campo es necesario']
+    nombre_del_puesto: {
+        type: String,
+        required: [true, 'El nombre del puesto es necesario']
     },
-    hora_entrada:{
-        type: Number,
-        requiere: [true,'La hora es necesaria']
+    anios_servicio: {
+        type: String,
+        required: [true, 'Los anios de servicio son necesarios']
     },
-    hora_salida:{
-        type: Number,
-        requiere: [true, 'La hora es necesaria']
+    hora_entrada: {
+        type: String,
+        required: [true, 'La hora de entrada es necesaria']
     },
-    activo:{
-        type: Number,
+    hora_salida: {
+        type: String,
+        required: [true, 'La hora de salida es necesaria']
+    },
+    activo: {
+        type: Boolean,
         default: true
-    }
-    
-});
+    },
+})
 
-module.exports = mongoose.model('Empleado', empleadoSchema);
+module.exports = mongoose.model('Empleado', empleadoSchema)

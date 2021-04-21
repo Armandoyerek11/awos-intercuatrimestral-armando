@@ -33,7 +33,7 @@ app.use(require('./routes/usuario'));
 app.use(require('./routes/empleado'));
 app.use(require('./routes/departamento'));
 
- mongoose.connect('mongodb+srv://admin1:pabema0524@cluster0.dfd4y.mongodb.net/compañiaMRLD',{
+mongoose.connect('mongodb://localhost:27017/empresa',{
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,

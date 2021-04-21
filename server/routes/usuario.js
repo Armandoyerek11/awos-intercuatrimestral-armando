@@ -1,44 +1,47 @@
 const express = require('express');
-const _ = require ('underscore');
+const _ = require('underscore');
 const Usuario = require('../models/usuario');
 const app = express();
-
-  app.get('/usuario', function (req, res) {
+ 
+app.get('/usuario', function (req, res) {
     let desde = req.query.desde || 0;
-    let hasta = req.query.hasta || 100;
-    Usuario.find({ activo: true })
+    let hasta = req.query.hasta || 10;
+
+    Usuario.find({ estado: true })
     .skip(Number(desde))
     .limit(Number(hasta))
-    .exec((err,usuarios) => {
-        if(err){
-            return res.status(400).json({
-                ok: false,
-                msg: 'Ocurrio un error al consultar',
-                err
-            });
-        }
-    
-        res.json({
-            ok:true,
-            msg:'Lista de usuarios obtenida con exito',
-            conteo: usuarios.length,
-            usuarios
-        });
+    .exec((err, usuarios) =>{
+       if(err) {
+           return res.status(400).json({
+               ok: false,
+               msg: 'Ocurrio un error al momento de consultar',
+               err 
+           });
+       } 
+
+       res.json({
+           ok: true,
+           msg: 'Lista de usuarios obtenida con exito',
+           conteo: usuarios.length,
+           usuarios
+       });
     });
-  });
+  })
   
-  app.post('/usuario', function(req, res){
+  app.post('/usuario', function (req, res) {
     let body = req.body;
     let usr = new Usuario({
-        id_usuario: body.id_usuario,
+        _id: req.body._id,
         nombre: body.nombre,
-        primer_apellido: body.primer_apellido,
-        segundo_apellido: body.segundo_apellido,
-        edad: body.edad,
-        curp: body.curp,
-        telefono: body.telefono,
-        email: body.email,
-    });  
+        primer_apellido: req.body.primer_apellido,
+        segundo_apellido: req.body.segundo_apellido,
+        edad: req.body.edad,
+        curp: req.body.curp,
+        telefono: req.body.telefono,
+        mail: req.body.mail,
+        
+        
+    });
 
     usr.save((err, usrDB) => {
         if(err) {
@@ -48,7 +51,6 @@ const app = express();
                 err
             });
         }
-        
         res.json({
             ok: true,
             msg: 'Usuario insertado con exito',
@@ -57,46 +59,47 @@ const app = express();
     });
   });
   
-  app.put('/usuario/:id', function (req, res){
-    let id = req.params.id;
-    let body = _.pick(req.body, ['nombre','primer_apellido','segundo_apellido','curp','telefono']);
+  app.put('/usuario', function(req, res) {
+    let id = req.params.id
+    let body = _.pick(req.body, ['nombre','primer_apellido','segundo_apellido','email']);
 
-    Usuario.findByIdAndUpdate(id , body , 
-    { new:true, runValidators:true, context:'query'},
-    (err, usrDB) => {
-        if(err) {
+    Usuario.findByIdAndUpdate(id, body, { new: true, 
+        runValidators: true, context: 'query' }, 
+        (err, usrDB) => {
+        if (err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Ocurrio un error al momento de actualizar',
+                msg: 'Error al actualizar',
                 err
             });
         }
+
         res.json({
-            ok:true,
+            ok: true,
             msg: 'Usuario actualizado con exito',
             usuario: usrDB
         });
     });
- });
+});
   
-  app.delete('/usuario/:id', function ( req, res){
+  app.delete('/usuario', function (req, res) {
+      let id =  req.params.id;
 
-    let id = req.params.id;
-    Usuario.findByIdAndUpdate(id, { estado: false }, 
-        { new: true, runValidators: true, context: 'query'},(err, usrBD) => {
-            if(err) {
-                        return res.status(400).json({
-                            ok: false,
-                            msg: 'Ocurrio un error al momento de eliminar',
-                            err
-                        });
-                    }
-                    res.json({
-                        ok:true,
-                        msg: 'Usuario eliminado con exito',
-                        usrBD
-                    });
-    });
+      Usuario.findByIdAndUpdate(id, { activo: false }, { new: true, runValidators: true, context: 'query' }, (err, usrDB) => {
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Ocurrio un error al intentar de eliminar el usuario',
+                err
+            });
+        }
+
+        res.json({
+            ok: true,
+            msg: 'Usuario eliminado con exito',
+            usrDB
+        });
+      });
   });
-  
-  module.exports = app;
+
+module.exports = app;

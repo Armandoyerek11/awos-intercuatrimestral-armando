@@ -1,43 +1,44 @@
-const mongoose = require('mongoose');
-
+const mongoose = require ('mongoose')
 let Schema = mongoose.Schema;
-
-//let usuarioSchema = new Schema({
- let usuarioSchema = new Schema({
-    id_usuario:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Usuario',
-        require: true
+let usuarioSchema = new Schema({
+    _id: {
+        type: String,
+        required: [true, 'El id es necesario'],
     },
-    id_departamento:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Departamento',
-        require: true
+    nombre: {
+        type: String,
+        required: [true, 'El nombre es necesario']
     },
-    nombre_del_puesto:{
-        type:String,
-        require:[true,'El nombre del puesto es necesario'],
+    primer_apellido: {
+        type: String,
+        required: [true, 'El apellido es necesario']
+    },
+    segundo_apellido: {
+        type: String,
+        required: [true, 'El apellido es necesario']
+    },
+    edad: {
+        type: String,
+        required: [true, 'La edad es necesaria']
+    },
+    curp: {
+        type: String,
+        required: [true, 'La curp es necesaria'],
         unique: true
     },
-    anios_servicios:{
-        type:Number,
-        requiere:[true, 'Este campo es necesario']
+    telefono: {
+        type: String,
+        required: [true, 'El telefono es necesario'],     
     },
-    hora_entrada:{
-        type: Number,
-        requiere: [true,'La hora es necesaria']
+    mail: {
+        type: String,
+        required: [true, 'El correo es necesario'],
+        unique: true
     },
-    hora_salida:{
-        type: Number,
-        requiere: [true, 'La hora es necesaria']
-    },
-    activo:{
-        type: Number,
+    activo: {
+        type: Boolean,
         default: true
-    }
-    
- });
-    
+    },
+})
 
-
-module.exports = mongoose.model('Usuario', usuarioSchema);
+module.exports = mongoose.model('Usuario', usuarioSchema)

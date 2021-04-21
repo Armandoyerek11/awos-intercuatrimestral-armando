@@ -1,30 +1,42 @@
 const mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-//let departamentoSchema = new Schema({
-let departamentoSchema = new Schema({
-    id_jefede_area:{
-        type:Schema.Types.ObjectId,
-        ref:"empleado",
-        requiere:true
-    },
-    nombre:{
-        type: String,
-        requiere:[true,'El nombre es necesario']
-    }, 
-    numero_empleados:{
-        type: Number,
-        requiere: true
-    },
-    extencion_telefono:{
-        type: Number,
-        unique: true
-    },
-    activo:{
-        type: Boolean,
-        default:true
-    }
-   
-});
- 
+const Schema = mongoose.Schema;
 
-module.exports = mongoose.model('Departamento', departamentoSchema);
+let departamentoSchema = new Schema({
+    
+    _id: {
+        type: String,
+        required: [true, 'El id es necesario']
+       
+    },
+    
+    id_jefe_de_area: {
+        type: String,
+        required: [true, 'El id del jefe de area es necesario']
+       
+    },
+    
+    nombre: {
+        type: String,
+        required: [true, 'El nombre es necesario']
+       
+    },
+    
+    numero_empleados: {
+        type: String,
+        required: [true, 'El numero de empleados es necesario']
+       
+    },
+
+    extension_telefonica: {
+        type: String,
+        required: [true, 'La extension es necesaria']
+       
+    },
+
+    activo: {
+        type: Boolean,
+        default: true
+    },
+})
+
+module.exports = mongoose.model('Departamento', departamentoSchema)
