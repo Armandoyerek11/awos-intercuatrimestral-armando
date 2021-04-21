@@ -1,15 +1,15 @@
 const express = require('express');
 const _ = require ('underscore');
-const Usuario = require('../models/usuario');
+const Departamento = require('../models/departamento');
 const app = express();
 
-  app.get('/usuario', function (req, res) {
+app.get('/departamento', function (req, res) {
     let desde = req.query.desde || 0;
     let hasta = req.query.hasta || 100;
-    Usuario.find({ activo: true })
+    Departamento.find({ activo: true })
     .skip(Number(desde))
     .limit(Number(hasta))
-    .exec((err,usuarios) => {
+    .exec((err,departamentos) => {
         if(err){
             return res.status(400).json({
                 ok: false,
@@ -20,26 +20,23 @@ const app = express();
     
         res.json({
             ok:true,
-            msg:'Lista de usuarios obtenida con exito',
-            conteo: usuarios.length,
-            usuarios
+            msg:'Lista de departamentos obtenida con exito',
+            conteo: departamentos.length,
+            departamentos
         });
     });
   });
-  
-  app.post('/usuario', function(req, res){
+
+  app.post('/departamento', function(req, res){
     let body = req.body;
-    let usr = new Usuario({
+    let dep = new Departamento({
+        id_jefe_de_area: body.id_jefe_de_area,
         nombre: body.nombre,
-        primer_apellido: body.primer_apellido,
-        segundo_apellido: body.segundo_apellido,
-        edad: body.edad,
-        curp: body.curp,
-        telefono: body.telefono,
-        email: body.email,
+        numero_empleados: body.numero_empleados,
+        extencion_telefonica: body.extencion_telefonica,
     }); 
 
-    usr.save((err, usrDB) => {
+    dep.save((err, depDB) => {
         if(err) {
             return res.status(400).json({
                 ok: false,
@@ -50,19 +47,19 @@ const app = express();
         
         res.json({
             ok: true,
-            msg: 'Usuario insertado con exito',
-            usrDB
+            msg: 'Departamento insertado con exito',
+            depDB
         });
     });
   });
-  
-  app.put('/usuario/:id', function (req, res){
-    let id = req.params.id;
-    let body = _.pick(req.body, ['nombre','primer_apellido','segundo_apellido','curp','telefono']);
 
-    Usuario.findByIdAndUpdate(id , body , 
+  app.put('/departamento/:id', function (req, res){
+    let id = req.params.id;
+    let body = _.pick(req.body, ['nombre','numero_empleados','extencion_telefonica']);
+
+    Departamento.findByIdAndUpdate(id , body , 
     { new:true, runValidators:true, context:'query'},
-    (err, usrDB) => {
+    (err, depDB) => {
         if(err) {
             return res.status(400).json({
                 ok: false,
@@ -72,17 +69,17 @@ const app = express();
         }
         res.json({
             ok:true,
-            msg: 'Usuario actualizado con exito',
-            usuario: usrDB
+            msg: 'Departamento actualizado con exito',
+            departamento: depDB
         });
     });
  });
-  
-  app.delete('/usuario/:id', function ( req, res){
+
+ app.delete('/departamento/:id', function ( req, res){
 
     let id = req.params.id;
-    Usuario.findByIdAndUpdate(id, { estado: false }, 
-        { new: true, runValidators: true, context: 'query'},(err, usrBD) => {
+    Departamento.findByIdAndUpdate(id, { activo: false }, 
+        { new: true, runValidators: true, context: 'query'},(err, depBD) => {
             if(err) {
                         return res.status(400).json({
                             ok: false,
@@ -92,8 +89,8 @@ const app = express();
                     }
                     res.json({
                         ok:true,
-                        msg: 'Usuario eliminado con exito',
-                        usrBD
+                        msg: 'Departamento eliminado con exito',
+                        depBD
                     });
     });
   });

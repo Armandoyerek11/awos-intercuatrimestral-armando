@@ -1,45 +1,42 @@
 const express = require('express');
 const _ = require ('underscore');
-const Usuario = require('../models/usuario');
+const Empleado = require('../models/empleado');
 const app = express();
 
-  app.get('/usuario', function (req, res) {
+app.get('/empleado', function (req, res) {
     let desde = req.query.desde || 0;
     let hasta = req.query.hasta || 100;
-    Usuario.find({ activo: true })
+    Empleado.find({ activo: true })
     .skip(Number(desde))
     .limit(Number(hasta))
-    .exec((err,usuarios) => {
+    .exec((err,empleados) => {
         if(err){
             return res.status(400).json({
                 ok: false,
-                msg: 'Ocurrio un error al consultar',
+                msg: 'Ocurrio un error al consultar empleado',
                 err
             });
         }
-    
         res.json({
             ok:true,
-            msg:'Lista de usuarios obtenida con exito',
-            conteo: usuarios.length,
-            usuarios
+            msg:'Lista de empleados obtenida con exito',
+            conteo: empleados.length,
+            empleados
         });
     });
   });
-  
-  app.post('/usuario', function(req, res){
+  app.post('/empleado', function(req, res){
     let body = req.body;
-    let usr = new Usuario({
-        nombre: body.nombre,
-        primer_apellido: body.primer_apellido,
-        segundo_apellido: body.segundo_apellido,
-        edad: body.edad,
-        curp: body.curp,
-        telefono: body.telefono,
-        email: body.email,
+    let emp = new Empleado({
+        id_usuario: body.id_usuario,
+        id_departamento: body.id_departamento,
+        nombre_del_puesto: body.nombre_del_puesto,
+        anios_servicio: body.anios_servicio,
+        hora_entrada: body.hora_entrada,
+        hora_salida: body.hora_salida,
     }); 
 
-    usr.save((err, usrDB) => {
+    emp.save((err, empDB) => {
         if(err) {
             return res.status(400).json({
                 ok: false,
@@ -50,19 +47,19 @@ const app = express();
         
         res.json({
             ok: true,
-            msg: 'Usuario insertado con exito',
-            usrDB
+            msg: 'empleado insertado con exito',
+            empDB
         });
     });
   });
   
-  app.put('/usuario/:id', function (req, res){
+  app.put('/empleado/:id', function (req, res){
     let id = req.params.id;
-    let body = _.pick(req.body, ['nombre','primer_apellido','segundo_apellido','curp','telefono']);
+    let body = _.pick(req.body, ['nomnre_del_puesto','anios_servicio','hora_entrada','hora_salida']);
 
-    Usuario.findByIdAndUpdate(id , body , 
+    Empleado.findByIdAndUpdate(id , body , 
     { new:true, runValidators:true, context:'query'},
-    (err, usrDB) => {
+    (err, empDB) => {
         if(err) {
             return res.status(400).json({
                 ok: false,
@@ -72,17 +69,17 @@ const app = express();
         }
         res.json({
             ok:true,
-            msg: 'Usuario actualizado con exito',
-            usuario: usrDB
+            msg: 'Empleado actualizado con exito',
+            empleado: empDB
         });
     });
  });
-  
-  app.delete('/usuario/:id', function ( req, res){
+
+ app.delete('/empleado/:id', function ( req, res){
 
     let id = req.params.id;
-    Usuario.findByIdAndUpdate(id, { estado: false }, 
-        { new: true, runValidators: true, context: 'query'},(err, usrBD) => {
+    Empleado.findByIdAndUpdate(id, { activo: false }, 
+        { new: true, runValidators: true, context: 'query'},(err, empBD) => {
             if(err) {
                         return res.status(400).json({
                             ok: false,
@@ -92,8 +89,8 @@ const app = express();
                     }
                     res.json({
                         ok:true,
-                        msg: 'Usuario eliminado con exito',
-                        usrBD
+                        msg: 'Empleado eliminado con exito',
+                        empBD
                     });
     });
   });
