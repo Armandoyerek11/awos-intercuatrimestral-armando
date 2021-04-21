@@ -30,6 +30,7 @@ const app = express();
   app.post('/usuario', function(req, res){
     let body = req.body;
     let usr = new Usuario({
+        id_usuario: body.id_usuario,
         nombre: body.nombre,
         primer_apellido: body.primer_apellido,
         segundo_apellido: body.segundo_apellido,
@@ -37,7 +38,7 @@ const app = express();
         curp: body.curp,
         telefono: body.telefono,
         email: body.email,
-    }); 
+    });  
 
     usr.save((err, usrDB) => {
         if(err) {
