@@ -18,7 +18,7 @@ let usuarioSchema = new Schema({
         required: [true, 'El apellido es necesario']
     },
     edad: {
-        type: String,
+        type: Number,
         required: [true, 'La edad es necesaria']
     },
     curp: {
@@ -27,7 +27,7 @@ let usuarioSchema = new Schema({
         unique: true
     },
     telefono: {
-        type: String,
+        type: Number,
         required: [true, 'El telefono es necesario'],     
     },
     mail: {

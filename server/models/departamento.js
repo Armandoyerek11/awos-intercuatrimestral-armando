@@ -22,13 +22,13 @@ let departamentoSchema = new Schema({
     },
     
     numero_empleados: {
-        type: String,
+        type: Number,
         required: [true, 'El numero de empleados es necesario']
        
     },
 
     extension_telefonica: {
-        type: String,
+        type: Number,
         required: [true, 'La extension es necesaria']
        
     },
